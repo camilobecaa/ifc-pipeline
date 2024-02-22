@@ -55,30 +55,43 @@
     {{ dropzone.load_js() }}
 
     <script>
-        Dropzone.prototype.defaultOptions.dictDefaultMessage = "Drop files or click here to upload";
-        Dropzone.options.myDropzone = {
-            autoProcessQueue: false,
-            acceptedFiles: ".ifc",
-            parallelUploads: 1000,
-            uploadMultiple: true,
-            addRemoveLinks: false,
-            timeout: 0,
-            maxFilesize: 8 * 1024,
-            
-            init: function () {
-                var submitButton = document.querySelector("#submit")
-                myDropzone = this;
-
-                submitButton.addEventListener("click", function () {
-                    myDropzone.removeEventListeners();
-                    myDropzone.processQueue();
-                });
-
-                this.on("success", function (file, response) {
-                    window.location = response.url;
-                });
+        Dropzone.autoDiscover = false;
+        console.log("Dropzone.autoDiscover: Disabled");
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Dropzone === 'undefined') {
+                console.error('Dropzone.js not loaded');
+                return;
             }
-        };
+    
+            // Disable Dropzone auto-discovery
+            Dropzone.autoDiscover = false;
+    
+            // Custom Dropzone Configuration
+            var myDropzone = new Dropzone("#myDropzone", {
+                url: "/", // Set the URL to your upload endpoint
+                dictDefaultMessage: "Drop files or click here to upload",
+                autoProcessQueue: false,
+                acceptedFiles: ".ifc",
+                parallelUploads: 1000,
+                uploadMultiple: true,
+                addRemoveLinks: false,
+                timeout: 0,
+                maxFilesize: 8 * 1024,
+                init: function() {
+                    var submitButton = document.querySelector("#submit");
+                    console.log("Initialize");
+    
+                    submitButton.addEventListener("click", () => {
+                        this.removeEventListeners();
+                        this.processQueue();
+                    });
+    
+                    this.on("success", (file, response) => {
+                        window.location = response.url;
+                    });
+                }
+            });
+        });
     </script>
     
     <button id="submit" style="padding: 10px 20px; border-radius:5px">Submit</button>
