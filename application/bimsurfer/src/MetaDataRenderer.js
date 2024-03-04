@@ -124,7 +124,6 @@ export default class MetaDataRenderer extends EventHandler {
 
     this.models = {};
     this.domNode = document.getElementById(args['domNode']);
-
     this.selectedParent = null;
     this.selectedElement = null;
     this.selectedElements = [];
@@ -150,6 +149,8 @@ export default class MetaDataRenderer extends EventHandler {
     s.setName(elem.type || elem.getType());
     ['GlobalId', 'Name', 'OverallWidth', 'OverallHeight', 'Tag', 'PredefinedType', 'FlowDirection'].forEach(function(k) {
       let v = elem[k];
+      console.log('test');
+
       if (typeof(v) === 'undefined') {
         const fn = elem['get'+k];
         if (fn) {
@@ -160,6 +161,27 @@ export default class MetaDataRenderer extends EventHandler {
         const r = s.addRow();
         r.setName(k);
         r.setValue(v);
+      }
+      if (k === 'GlobalId' && v !== undefined) {
+        console.log('GlobalId:', v);
+        console.log(typeof(v));
+        let globalID = v;
+        fetch('http://127.0.0.1:5000/receive_data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({globalID})
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+
       }
     });
     return s;

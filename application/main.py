@@ -192,8 +192,20 @@ def check_viewer(id):
     if not utils.validate_id(id):
         abort(404)
     return render_template('progress.html', id=id)    
+
+@application.route('/receive_data', methods=['POST'])   
+def receive_data():
+    # Extracting the data sent from JavaScript
+    data = request.json
+    #print(request.data)
+    global_id = data.get('globalID')
+    print(f"Received Global ID: {global_id}")
     
+    # You can process the received data here
     
+    # Sending a response back to JavaScript
+    return jsonify({"message": "Data received successfully!"})
+
 @application.route('/pp/<id>', methods=['GET'])
 def get_progress(id):
     if not utils.validate_id(id):
